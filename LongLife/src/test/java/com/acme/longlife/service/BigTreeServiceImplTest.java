@@ -206,7 +206,7 @@ public class BigTreeServiceImplTest {
             .isInstanceOf(ResponseEntity.ok().build().getClass());
     }
 
-    //DELETE BIG TREE VALID ID
+    //DELETE BIG TREE INVALID ID
     @Test
     @DisplayName("When DeleteBigTree With Invalid Id Then Returns ResourceNotFoundException")
     public void whenDeleteBigTreeWithInvalidIdThenReturnsResourceNotFoundException(){
