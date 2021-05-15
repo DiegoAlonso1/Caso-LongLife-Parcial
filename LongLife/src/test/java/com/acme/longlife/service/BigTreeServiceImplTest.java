@@ -4,7 +4,6 @@ import com.acme.longlife.domain.model.BigTree;
 import com.acme.longlife.domain.repository.BigTreeRepository;
 import com.acme.longlife.domain.service.BigTreeService;
 import com.acme.longlife.exception.ResourceNotFoundException;
-import com.acme.longlife.service.BigTreeServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,15 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -36,6 +38,37 @@ public class BigTreeServiceImplTest {
         public BigTreeService bigTreeService(){
             return new BigTreeServiceImpl();
         }
+    }
+
+    //GET ALL BIG TREES
+    @Test
+    @DisplayName("When GetAllBigTrees Then Returns PageOfBigTrees")
+    public void whenGetAllBigTreesThenReturnsPageOfBigTrees(){
+        //Arrange
+        Pageable pageable = DefaultPageable();
+
+        /*BigTrees*/
+        List<BigTree> bigTrees = List.of(
+                CreateValidBigTree(1L, "user1", "email1"),
+                CreateValidBigTree(2L, "user2", "email2"),
+                CreateValidBigTree(3L, "user3", "email3"),
+                CreateValidBigTree(4L, "user4", "email4"),
+                CreateValidBigTree(5L, "user5", "email5")
+        );
+        Page<BigTree> bigTreePage = new PageImpl<>(bigTrees, pageable, bigTrees.size());
+
+        when(bigTreeRepository.findAll(pageable)).thenReturn(bigTreePage);
+
+        //Act
+        Page<BigTree> foundBigTrees = bigTreeService.getAllBigTrees(pageable);
+        //Assert
+        assertThat(foundBigTrees)
+                .isEqualTo(bigTreePage)
+                .contains(bigTrees.get(0),
+                        bigTrees.get(1),
+                        bigTrees.get(2),
+                        bigTrees.get(3),
+                        bigTrees.get(4));
     }
 
     //GET BIG TREE BY ID VALID ID
@@ -246,5 +279,23 @@ public class BigTreeServiceImplTest {
 
     private String InvalidAgeMessage(){
         return "The expected age must be over 50";
+    }
+
+    private Pageable DefaultPageable(){
+        return Pageable.unpaged();
+    }
+
+    private BigTree CreateValidBigTree(Long id, String userName, String email)
+    {
+        Calendar date = Calendar.getInstance();
+        date.set(1970, 05, 14);
+        return new BigTree()
+                .setId(id)
+                .setUsername(userName)
+                .setEmail(email)
+                .setGender("gender")
+                .setFirstName("first")
+                .setLastName("last")
+                .setBornAt(date);
     }
 }

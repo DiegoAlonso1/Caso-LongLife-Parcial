@@ -8,13 +8,8 @@ import com.acme.longlife.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.net.http.HttpResponse;
 
 @Service
 public class GreenLeafServiceImpl implements GreenLeafService {
@@ -31,7 +26,8 @@ public class GreenLeafServiceImpl implements GreenLeafService {
     @Override
     public GreenLeaf getGreenLeafByIdAndBigTreeId(Long bigTreeId, Long greenLeafId) {
         return greenLeafRepository.findByIdAndAndBigTreeId(greenLeafId, bigTreeId).
-                orElseThrow(()->new ResourceNotFoundException("GreenLeaf", "Id", greenLeafId));
+                orElseThrow(()->new ResourceNotFoundException("GreenLeaf not found with Id "
+                        + greenLeafId + " and BigTreeId " + bigTreeId));
     }
 
     @Override

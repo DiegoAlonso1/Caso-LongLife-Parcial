@@ -35,8 +35,9 @@ public class GreenLeaf implements Serializable {
 
 
 
-    public void setId(Long id) {
+    public GreenLeaf setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public Long getId() {
